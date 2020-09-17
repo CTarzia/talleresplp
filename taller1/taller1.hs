@@ -244,12 +244,25 @@ notaDo = Nota 60 1
 dore = Secuencia (Nota 60 1) (Nota 61 1)
 doremiParalelo = Paralelo([Nota 60 1, Secuencia (Nota 60 1) (Nota 61 1), Nota 62 1])
 
+transformarACero :: Melodia -> Melodia
+transformarACero = foldMelodia cSil cN Secuencia Paralelo
+               where cSil = (\d -> Silencio 0)
+                     cN = (\t d -> Nota 0 0)
+
+muchasSecuencias :: Melodia
+muchasSecuencias = Paralelo [ Secuencia (Silencio 1) (Nota 1 1),
+                             Secuencia (Nota 2 2) (Silencio 2) ,
+                             Secuencia (Silencio 3) (Nota 3 3),
+                             Secuencia (Nota 4 4) (Silencio 4)]
+
 testsEj1 = test [
   --guido superponer
 
+ --canon
   show (Paralelo [Nota 60 4,Secuencia (Silencio 2) (Paralelo [Nota 60 4, Secuencia (Silencio 2) (Nota 60 4)])]) ~=? (show (canon 2 3 (Nota 60 4))),
   show (Paralelo [Paralelo [Nota 60 10,Secuencia (Silencio 3) (Nota 64 7),Secuencia (Silencio 6) (Nota 67 4)],Secuencia (Silencio 1) (Paralelo [Nota 60 10,Secuencia (Silencio 3) (Nota 64 7),Secuencia (Silencio 6) (Nota 67 4)])]) ~=? (show (canon 1 2 acorde)),
-
+  show (Paralelo [Secuencia (Nota 60 9) (Silencio 1),Secuencia (Silencio 3) (Secuencia (Nota 60 9) (Silencio 1))]) ~=? show (canon 3 2 (stac 60)),
+  
   show (Secuencia (Secuencia (Nota 60 1) (Nota 60 2))(Nota 60 3)) ~=? show(secuenciar [Nota 60 1, Nota 60 2, Nota 60 3])
   --martin arregla: show (Secuencia (acorde, Secuencia (acorde, otroAcorde)) ) ~=? show(secuenciar [acorde, acorde, otroAcorde])
   ]
@@ -260,17 +273,27 @@ testsEj2 = test [
   ]
 testsEj3 = test [
   --chiara
-  2 ~=? 1+1,
-  4 ~=? 2*2
+  show acorde ~=? show (foldMelodia Silencio Nota Secuencia Paralelo acorde),
+  show (Paralelo [Nota 0 0,Secuencia (Silencio 0) (Nota 0 0),Secuencia (Silencio 0) (Nota 0 0)]) ~=? show (transformarACero acorde)
   ]
 testsEj4 = test [
   --guido mapmelodia transportar y duraciontotal
   --chiara cambiarvelocidad invertir
   2 ~=? 1+1,
-  4 ~=? 2*2
+  --cambiarVelocidad
+  show (Paralelo [Nota 60 20,Secuencia (Silencio 6) (Nota 64 14),Secuencia (Silencio 12) (Nota 67 8)]) ~=? show (cambiarVelocidad 2 acorde),
+  show (Secuencia (Secuencia (Secuencia (Secuencia (Secuencia (Secuencia (Nota 60 0) (Nota 62 0)) (Nota 64 0)) (Nota 60 0)) (Nota 64 0)) (Nota 60 0)) (Nota 64 0)) ~=? show (cambiarVelocidad 0 doremi),
+  --invertir
+  show (Paralelo [Secuencia (Nota 1 1) (Silencio 1),Secuencia (Silencio 2) (Nota 2 2),Secuencia (Nota 3 3) (Silencio 3),Secuencia (Silencio 4) (Nota 4 4)]) ~=? show (invertir muchasSecuencias),
+  show (Paralelo [(Silencio 1), (Silencio 2), (Silencio 3)]) ~=? show (invertir (Paralelo [(Silencio 1), (Silencio 2), (Silencio 3)]))
   ]
 testsEj5 = test [
   --martin
+  2 ~=? 1+1,
+  2 ~=? 1+1,
+  2 ~=? 1+1,
+  2 ~=? 1+1,
+  2 ~=? 1+1,
   2 ~=? 1+1,
   4 ~=? 2*2
   ]
