@@ -321,6 +321,10 @@ testsEj5 = test [
   [64] ~=? notasQueSuenan 1 notasIguales
   ]
 testsEj6 = test [
+
+-- chiara cambios
+-- martin eventosPorNotas
+--gui eventos
   2 ~=? 1+1,
   4 ~=? 2*2
   ]
