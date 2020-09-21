@@ -321,6 +321,12 @@ testsEj5 = test [
   [64] ~=? notasQueSuenan 1 notasIguales
   ]
 testsEj6 = test [
+  [Off 1 3,On 1 7,On 1 9] ~=? cambios [1,2,3,4,5] [1,2,7,5,7,4,9] 1,
+  [Off 0 1,On 0 2] ~=? cambios [1,1,1,1,1] [2,2,2,2] 0,
+  [] ~=? cambios [1,1,1,1,1] [1] 0,
+  [Off 0 1] ~=? cambios [1] [] 0,
+  [On 0 3] ~=? cambios [] [3] 0,
+  [On 1 4] ~=? cambios [1,2,3] [1,2,3,4] 1,
 
 -- chiara cambios
 -- martin eventosPorNotas
