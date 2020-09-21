@@ -79,14 +79,23 @@ invertir = foldMelodia Silencio Nota cSec Paralelo
                where cSec = (\m1 m2 -> Secuencia m2 m1)
 
 -- Ejercicio 5
--- En instantes menores que 0 no suena ninguna nota. Se puede usar recursión explícita. Resaltar las partes del código que hacen que no se ajuste al esquema fold.
+sinRepetidos :: (Eq a) => [a] -> [a]
+--sinRepetidos [] = []
+--sinRepetidos (x:xs) | elem x xs = sinRepetidos xs
+--              | otherwise = x:(sinRepetidos xs)
+sinRepetidos = foldr (\x rec -> if (elem x rec) then rec else (x:rec) ) []
+
 notasQueSuenan :: Instante->Melodia->[Tono]
+notasQueSuenan i m = sinRepetidos (notasQueSuenanConRepes i m) -- No me sale con . (puntito)
+
+-- En instantes menores que 0 no suena ninguna nota. Se puede usar recursión explícita. Resaltar las partes del código que hacen que no se ajuste al esquema fold.
+notasQueSuenanConRepes :: Instante->Melodia->[Tono]
 --Sugerencia: usar concatMap.
-notasQueSuenan i m | (i < 0) = []
-notasQueSuenan i (Silencio d) = []
-notasQueSuenan i (Nota t d) = if (i < d) then [t] else []
-notasQueSuenan i (Secuencia m1 m2) = (notasQueSuenan i m1) ++ (notasQueSuenan (i - (duracionTotal m1)) m2)
-notasQueSuenan i (Paralelo l) = concatMap (notasQueSuenan i) l
+notasQueSuenanConRepes i m | (i < 0) = []
+notasQueSuenanConRepes i (Silencio d) = []
+notasQueSuenanConRepes i (Nota t d) = if (i < d) then [t] else []
+notasQueSuenanConRepes i (Secuencia m1 m2) = (notasQueSuenanConRepes i m1) ++ (notasQueSuenanConRepes (i - (duracionTotal m1)) m2)
+notasQueSuenanConRepes i (Paralelo l) = concatMap (notasQueSuenanConRepes i) l
 
 {- No se puede definir notasQueSuenan usando el esquema de recursion foldMelodia porque al tener que hacer el 
 llamado recursivo en los casos de Secuencia y Paralelo se perderia el contexto, particularmente el valor de i.
@@ -152,6 +161,12 @@ _fa2  = Nota 77
 
 acorde :: Melodia
 acorde = Paralelo [_do 10, Secuencia (Silencio 3) (_mi 7), Secuencia (Silencio 6) (_sol 4)]
+
+otroAcorde :: Melodia
+otroAcorde = Paralelo [Secuencia (Silencio 2) (_fa2 8),_do 5,  Secuencia (Silencio 5) (_reb2 9)]
+
+notasIguales :: Melodia
+notasIguales = Paralelo [_mi 5, _mi 3]
 
 doremi :: Melodia
 doremi = secuenciar [_do 3, _re 1, _mi 3, _do 1, _mi 2, _do 2, _mi 4]
@@ -289,13 +304,23 @@ testsEj4 = test [
   ]
 testsEj5 = test [
   --martin
-  2 ~=? 1+1,
-  2 ~=? 1+1,
-  2 ~=? 1+1,
-  2 ~=? 1+1,
-  2 ~=? 1+1,
-  2 ~=? 1+1,
-  4 ~=? 2*2
+  --PREGUNTA: ESTOS TESTS SOBREESPECIFICAN (EXIGEN UN ORDEN) PERO ES EL QUE NOSOSTROS PUSIMOS, TA BIEN?
+  [_re] ~=? notasQueSuenan 0 (_re 5)
+  --doremi = secuenciar [_do 3, _re 1, _mi 3, _do 1, _mi 2, _do 2, _mi 4]
+  [_do] ~=? notasQueSuenan 0 doremi
+  [_do] ~=? notasQueSuenan 2 doremi
+  [_mi] ~=? notasQueSuenan 4 doremi
+  [] ~=? notasQueSuenan  doremi
+  [] ~=? notasQueSuenan 16 doremi
+  [] ~=? notasQueSuenan (-1) doremi
+  --acorde = Paralelo [_do 10, Secuencia (Silencio 3) (_mi 7), Secuencia (Silencio 6) (_sol 4)]
+  [_do] ~=? notasQueSuenan 0 acorde
+  [_do, _mi] ~=? notasQueSuenan 3 acorde
+  [_do, _mi, _sol] ~=? notasQueSuenan 6 acorde
+  [] ~=? notasQueSuenan 10 acorde
+  --notasIguales = Paralelo [_mi 5, _mi 3]
+  [_mi] ~=? notasQueSuenan 1 notasIguales
+
   ]
 testsEj6 = test [
   2 ~=? 1+1,
