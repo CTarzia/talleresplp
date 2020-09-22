@@ -274,6 +274,23 @@ muchasSecuencias = Paralelo [ Secuencia (Silencio 1) (Nota 1 1),
                              Secuencia (Silencio 3) (Nota 3 3),
                              Secuencia (Nota 4 4) (Silencio 4)]
 
+obtenerListaDeParalelo :: Melodia -> [Melodia]
+obtenerListaDeParalelo (Paralelo ls) = ls
+
+primerElemSecuencia :: Melodia -> Melodia
+primerElemSecuencia (Secuencia m1 m2) = m1
+
+segundoElemSecuencia :: Melodia -> Melodia
+segundoElemSecuencia (Secuencia m1 m2) = m2
+
+esSilencio :: Duracion -> Melodia -> Bool
+esSilencio i (Silencio s) = if (i==s) then True else False
+esSilencio _ _ = False
+
+esParalelo :: Melodia -> Bool
+esParalelo (Paralelo ls) = True
+esParalelo _ = False
+
 testsEj1 = test [
   --guido superponer
 
@@ -281,23 +298,22 @@ testsEj1 = test [
   show (Paralelo [Nota 60 4,Secuencia (Silencio 2) (Paralelo [Nota 60 4, Secuencia (Silencio 2) (Nota 60 4)])]) ~=? (show (canon 2 3 (Nota 60 4))),
   show (Paralelo [Paralelo [Nota 60 10,Secuencia (Silencio 3) (Nota 64 7),Secuencia (Silencio 6) (Nota 67 4)],Secuencia (Silencio 1) (Paralelo [Nota 60 10,Secuencia (Silencio 3) (Nota 64 7),Secuencia (Silencio 6) (Nota 67 4)])]) ~=? (show (canon 1 2 acorde)),
   show (Paralelo [Secuencia (Nota 60 9) (Silencio 1),Secuencia (Silencio 3) (Secuencia (Nota 60 9) (Silencio 1))]) ~=? show (canon 3 2 (stac 60)),
-  
-  show (Secuencia (Secuencia (Nota 60 1) (Nota 60 2))(Nota 60 3)) ~=? show(secuenciar [Nota 60 1, Nota 60 2, Nota 60 3])
-  --martin arregla: show (Secuencia (acorde, Secuencia (acorde, otroAcorde)) ) ~=? show(secuenciar [acorde, acorde, otroAcorde])
+  --secuenciar
+  show (Secuencia (Secuencia (Nota 60 1) (Nota 60 2))(Nota 60 3)) ~=? show(secuenciar [Nota 60 1, Nota 60 2, Nota 60 3]),
+  show (Secuencia (Secuencia acorde acorde) otroAcorde) ~=? show(secuenciar [acorde, acorde, otroAcorde])
   ]
 testsEj2 = test [
-  --todos
-  2 ~=? 1+1,
-  4 ~=? 2*2
+  2 ~=? length (obtenerListaDeParalelo (canonInfinito 1 (Nota 2 3))),
+  show (Nota 2 3) ~=? show ((obtenerListaDeParalelo (canonInfinito 1 (Nota 2 3))) !! 0),
+  True ~=? esSilencio 1 (primerElemSecuencia ((obtenerListaDeParalelo (canonInfinito 1 (Nota 2 3))) !! 1)),
+  True ~=? esParalelo (segundoElemSecuencia ((obtenerListaDeParalelo (canonInfinito 1 (Nota 2 3))) !! 1))
   ]
 testsEj3 = test [
-  --chiara
   show acorde ~=? show (foldMelodia Silencio Nota Secuencia Paralelo acorde),
   show (Paralelo [Nota 0 0,Secuencia (Silencio 0) (Nota 0 0),Secuencia (Silencio 0) (Nota 0 0)]) ~=? show (transformarACero acorde)
   ]
 testsEj4 = test [
   --guido mapmelodia transportar y duraciontotal
-  --chiara cambiarvelocidad invertir
   2 ~=? 1+1,
   --cambiarVelocidad
   show (Paralelo [Nota 60 20,Secuencia (Silencio 6) (Nota 64 14),Secuencia (Silencio 12) (Nota 67 8)]) ~=? show (cambiarVelocidad 2 acorde),
@@ -321,14 +337,13 @@ testsEj5 = test [
   [64] ~=? notasQueSuenan 1 notasIguales
   ]
 testsEj6 = test [
+  --cambios
   [Off 1 3,On 1 7,On 1 9] ~=? cambios [1,2,3,4,5] [1,2,7,5,7,4,9] 1,
   [Off 0 1,On 0 2] ~=? cambios [1,1,1,1,1] [2,2,2,2] 0,
   [] ~=? cambios [1,1,1,1,1] [1] 0,
   [Off 0 1] ~=? cambios [1] [] 0,
   [On 0 3] ~=? cambios [] [3] 0,
   [On 1 4] ~=? cambios [1,2,3] [1,2,3,4] 1,
-
--- chiara cambios
 -- martin eventosPorNotas
 --gui eventos
   2 ~=? 1+1,
