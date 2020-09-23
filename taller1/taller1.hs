@@ -300,7 +300,7 @@ esParalelo _ = False
 
 testsEj1 = test [
   --superponer
-	show (Paralelo [Nota 55 4, Secuencia (Silencio 1) (Nota 59 4)]) ~=? (show (superponer (Nota 55 4) 1 (Nota 59 4))),
+  show (Paralelo [Nota 55 4, Secuencia (Silencio 1) (Nota 59 4)]) ~=? (show (superponer (Nota 55 4) 1 (Nota 59 4))),
 	show (Paralelo [Secuencia (Nota 60 9) (Silencio 1),Secuencia (Silencio 10) (Secuencia (Nota 61 9) (Silencio 1))]) ~=? (show (superponer (stac 60) 10 (stac 61))),
 
  --canon
