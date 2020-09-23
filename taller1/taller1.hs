@@ -6,10 +6,10 @@ type Tono         = Integer
 type Duracion     = Integer
 type Instante     = Integer
 
-data Melodia = 
+data Melodia =
      Silencio Duracion |
      Nota Tono Duracion |
-     Secuencia Melodia Melodia | 
+     Secuencia Melodia Melodia |
      Paralelo [Melodia]
   deriving Show
 
@@ -32,7 +32,7 @@ canon ds repeticiones m = foldNat m (superponer m ds) (repeticiones-1)
 
 -- ??
 secuenciar :: [Melodia] -> Melodia--Se asume que la lista no es vacía.
-secuenciar (m:ms) = foldl (\x rec -> Secuencia x rec) m ms 
+secuenciar (m:ms) = foldl (\x rec -> Secuencia x rec) m ms
 
 -- Ejercicio 2
 
@@ -94,7 +94,7 @@ notasQueSuenanConRepes i (Nota t d) = if (i < d) then [t] else []
 notasQueSuenanConRepes i (Secuencia m1 m2) = (notasQueSuenanConRepes i m1) ++ (notasQueSuenanConRepes (i - (duracionTotal m1)) m2)
 notasQueSuenanConRepes i (Paralelo l) = concatMap (notasQueSuenanConRepes i) l
 
-{- No se puede definir notasQueSuenan usando el esquema de recursion foldMelodia porque al tener que hacer el 
+{- No se puede definir notasQueSuenan usando el esquema de recursion foldMelodia porque al tener que hacer el
 llamado recursivo en los casos de Secuencia y Paralelo se perderia el contexto, particularmente el valor de i.
 -}
 
@@ -111,15 +111,8 @@ cambios l1 l2 i = (filtrarYCambiar l1' l2' i Off) ++ (filtrarYCambiar l2' l1' i 
 filtrarYCambiar :: [Tono]->[Tono]->Instante->(Instante -> Tono -> Evento)->[Evento]
 filtrarYCambiar l1 l2 i constr = map (constr i) (filter (\x -> not (elem x l2)) l1)
 
---Sugerencia: usar foldl sobre la lista de 0 a la duración.
 eventosPorNotas :: (Instante->[Tono])->Duracion->[Evento]
 eventosPorNotas f d = (foldl (\rec i -> rec ++ cambios (f (i-1)) (f i) i) (cambios [] (f 0) 0) [1..d]) ++ cambios (f d) [] (d+1)
-
-funcionEventos :: Instante -> [Tono]
-funcionEventos 0 = [60]
-funcionEventos 1 = [60,64]
-funcionEventos 2 = []
-funcionEventos 3 = [67]
 
 eventos :: Melodia -> Duracion -> [Evento]
 eventos m d = eventosPorNotas notasEnInstante d
@@ -169,16 +162,23 @@ _fa2  = Nota 77
 acorde :: Melodia
 acorde = Paralelo [_do 10, Secuencia (Silencio 3) (_mi 7), Secuencia (Silencio 6) (_sol 4)]
 
+doremi :: Melodia
+doremi = secuenciar [_do 3, _re 1, _mi 3, _do 1, _mi 2, _do 2, _mi 4]
+
+-- Pongan sus propias pruebas y melodías. Pueden definir más notas, la numeración es por semitonos.
 otroAcorde :: Melodia
 otroAcorde = Paralelo [Secuencia (Silencio 2) (_fa2 8),_do 5,  Secuencia (Silencio 5) (_reb2 9)]
 
 notasIguales :: Melodia
 notasIguales = Paralelo [_mi 5, _mi 3]
 
-doremi :: Melodia
-doremi = secuenciar [_do 3, _re 1, _mi 3, _do 1, _mi 2, _do 2, _mi 4]
+funcionEventos :: Instante -> [Tono]
+funcionEventos 0 = [60]
+funcionEventos 1 = [60,64]
+funcionEventos 2 = []
+funcionEventos 3 = [67]
 
--- Pongan sus propias pruebas y melodías. Pueden definir más notas, la numeración es por semitonos.
+
 
 -- Canon APL (autor: Pablo Barenbaum)
 
@@ -199,12 +199,12 @@ stac t = Secuencia (Nota t 9) (Silencio 1)
 stacatto :: Melodia -> Melodia
 stacatto = foldMelodia Silencio (\t d->stac t) Secuencia Paralelo
 
-cangrejo1 = secuenciar $ 
+cangrejo1 = secuenciar $
          [Silencio 4, _do 2, _mib 2]
       ++ [_sol 2, _lab 4, Silencio 2]
-      ++ [_si0 4, Silencio 2, _sol 4] 
-      ++ [_fas 4, _fa 4]              
-      ++ [_mi 2, Silencio 2, _mib 4]  
+      ++ [_si0 4, Silencio 2, _sol 4]
+      ++ [_fas 4, _fa 4]
+      ++ [_mi 2, Silencio 2, _mib 4]
       ++ [_re 2, _reb 2, _do 2]
       ++ [_si0 2, _sol0 2, _do 2, _fa 2]
       ++ [_mib 2, _re 4, Silencio 2]
@@ -227,7 +227,7 @@ cangrejo2 = secuenciar $ (map (\(d, f)->f d)) $
                 (1, _si), (1, _la), (1, _sol), (1, _fa)]
             ++ [(1, _mi), (1, _re), (1, _mi), (1, _sol),
                 (1, _do2), (1, _sol), (1, _fa), (1, _sol)]
-                
+
 cangrejo = Secuencia c (invertir c)
   where c = Paralelo [cangrejo1, cangrejo2]
 
@@ -323,7 +323,6 @@ testsEj4 = test [
   show (Paralelo [(Silencio 1), (Silencio 2), (Silencio 3)]) ~=? show (invertir (Paralelo [(Silencio 1), (Silencio 2), (Silencio 3)]))
   ]
 testsEj5 = test [
-  --PREGUNTA: ESTOS TESTS SOBREESPECIFICAN (EXIGEN UN ORDEN) PERO ES EL QUE NOSOSTROS PUSIMOS, TA BIEN?
   [62] ~=? (notasQueSuenan 0 (_re 5)),
   [60] ~=? notasQueSuenan 0 doremi,
   [60] ~=? notasQueSuenan 2 doremi,
@@ -334,7 +333,11 @@ testsEj5 = test [
   [60, 64] ~=? notasQueSuenan 3 acorde,
   [60, 64, 67] ~=? notasQueSuenan 6 acorde,
   [] ~=? notasQueSuenan 10 acorde,
-  [64] ~=? notasQueSuenan 1 notasIguales
+  [64] ~=? notasQueSuenan 1 notasIguales,
+  [60] ~=? notasQueSuenan 2 (canonInfinito 3 (Nota _do 10)),
+  [60] ~=? notasQueSuenan 8 (canonInfinito 3 (Nota _do 10)),
+  [60] ~=? notasQueSuenan 15 (canonInfinito 3 (Nota _do 10)),
+  [60] ~=? notasQueSuenan 20 (canonInfinito 3 (Nota _do 10))
   ]
 testsEj6 = test [
   --cambios
@@ -344,8 +347,15 @@ testsEj6 = test [
   [Off 0 1] ~=? cambios [1] [] 0,
   [On 0 3] ~=? cambios [] [3] 0,
   [On 1 4] ~=? cambios [1,2,3] [1,2,3,4] 1,
--- martin eventosPorNotas
+-- eventosPorNotas
+  [] ~=? eventosPorNotas funcionEventos 0,
+  [On 0 60,On 1 64,Off 2 60,Off 2 64] ~=? eventosPorNotas funcionEventos 2,
+  [On 0 60,On 1 64,Off 2 60,Off 2 64,On 3 67,Off 4 67] ~=? eventosPorNotas funcionEventos 3,
+  [On 0 60, Off 1 60] ~=? (\i -> notasQueSuenan i acorde) 1,
+  [On 0 60, On 3 64, On 6 67, Off 10 60, Off 10 64, Off 10 67] ~=? (\i -> notasQueSuenan i acorde) 10,
 --gui eventos
   2 ~=? 1+1,
   4 ~=? 2*2
   ]
+
+
