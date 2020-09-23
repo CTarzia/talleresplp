@@ -95,7 +95,12 @@ notasQueSuenanConRepes i (Paralelo l) = concatMap (notasQueSuenanConRepes i) l
 
 {- No se puede definir notasQueSuenan usando el esquema de recursion foldMelodia porque al tener que hacer el
 llamado recursivo en los casos de Secuencia y Paralelo se perderia el contexto, particularmente el valor de i. 
-Y si no tenemos el instante en el que ocurre la seccion de la melodia que estamos evaluando, no podemos determinar si las notas deberian ser agregadas o no a la respuesta.-}
+Y si no tenemos el instante en el que ocurre la seccion de la melodia que estamos evaluando, no podemos determinar
+si las notas deberian ser agregadas o no a la respuesta.-}
+
+{- Tampoco se puede definir con foldMelodia si invertimos los parametros porque seguimos teniendo el problema de no 
+saber el contexto de la melodia, y por lo tanto no podemos determinar en que instante de la melodia completa esta el 
+elemento de la melodia que estamos evaluando. -}
 
 -- Ejercicio 6
 
