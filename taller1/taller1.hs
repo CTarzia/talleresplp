@@ -380,7 +380,7 @@ testsEj6 = test [
   [On 0 60,On 1 64,Off 2 60,Off 2 64,On 3 67,Off 4 67] ~=? eventosPorNotas funcionEventos 3,
   [On 0 60, Off 2 60] ~=? (eventosPorNotas (\i -> notasQueSuenan i acorde) 1),
   [On 0 60, On 3 64, On 6 67, Off 10 60, Off 10 64, Off 10 67] ~=? (eventosPorNotas (\i -> notasQueSuenan i acorde) 10),
---gui eventos
+--eventos
 	[] ~=? (eventos (Silencio 1) 2),
   [On 0 60,On 3 64,On 6 67,Off 7 60,Off 7 64,Off 7 67] ~=? (eventos acorde 6),
 	[On 0 60,On 3 64,On 6 67,Off 10 60,Off 10 64,Off 10 67] ~=? (eventos acorde 11),
