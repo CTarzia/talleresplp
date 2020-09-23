@@ -30,7 +30,6 @@ superponer m1 ds m2 = Paralelo [m1, (Secuencia (Silencio ds) m2)]
 canon :: Duracion->Integer->Melodia->Melodia
 canon ds repeticiones m = foldNat m (superponer m ds) (repeticiones-1)
 
--- ??
 secuenciar :: [Melodia] -> Melodia--Se asume que la lista no es vacía.
 secuenciar (m:ms) = foldl (\x rec -> Secuencia x rec) m ms
 
@@ -83,7 +82,7 @@ sinRepetidos :: (Eq a) => [a] -> [a]
 sinRepetidos = foldr (\x rec -> if (elem x rec) then rec else (x:rec) ) []
 
 notasQueSuenan :: Instante->Melodia->[Tono]
-notasQueSuenan i m = sinRepetidos (notasQueSuenanConRepes i m)
+notasQueSuenan i = (sinRepetidos . notasQueSuenanConRepes i)
 
 -- En instantes menores que 0 no suena ninguna nota. Se puede usar recursión explícita. Resaltar las partes del código que hacen que no se ajuste al esquema fold.
 notasQueSuenanConRepes :: Instante->Melodia->[Tono]
@@ -95,8 +94,8 @@ notasQueSuenanConRepes i (Secuencia m1 m2) = (notasQueSuenanConRepes i m1) ++ (n
 notasQueSuenanConRepes i (Paralelo l) = concatMap (notasQueSuenanConRepes i) l
 
 {- No se puede definir notasQueSuenan usando el esquema de recursion foldMelodia porque al tener que hacer el
-llamado recursivo en los casos de Secuencia y Paralelo se perderia el contexto, particularmente el valor de i.
--}
+llamado recursivo en los casos de Secuencia y Paralelo se perderia el contexto, particularmente el valor de i. 
+Y si no tenemos el instante en el que ocurre la seccion de la melodia que estamos evaluando, no podemos determinar si las notas deberian ser agregadas o no a la respuesta.-}
 
 -- Ejercicio 6
 
