@@ -334,10 +334,10 @@ testsEj5 = test [
   [60, 64, 67] ~=? notasQueSuenan 6 acorde,
   [] ~=? notasQueSuenan 10 acorde,
   [64] ~=? notasQueSuenan 1 notasIguales,
-  [60] ~=? notasQueSuenan 2 (canonInfinito 3 (Nota _do 10)),
-  [60] ~=? notasQueSuenan 8 (canonInfinito 3 (Nota _do 10)),
-  [60] ~=? notasQueSuenan 15 (canonInfinito 3 (Nota _do 10)),
-  [60] ~=? notasQueSuenan 20 (canonInfinito 3 (Nota _do 10))
+  [60] ~=? notasQueSuenan 2 (canonInfinito 3 (_do 10)),
+  [60] ~=? notasQueSuenan 8 (canonInfinito 3 (_do 10)),
+  [60] ~=? notasQueSuenan 15 (canonInfinito 3 (_do 10)),
+  [60] ~=? notasQueSuenan 20 (canonInfinito 3 (_do 10))
   ]
 testsEj6 = test [
   --cambios
@@ -348,11 +348,11 @@ testsEj6 = test [
   [On 0 3] ~=? cambios [] [3] 0,
   [On 1 4] ~=? cambios [1,2,3] [1,2,3,4] 1,
 -- eventosPorNotas
-  [] ~=? eventosPorNotas funcionEventos 0,
+  [On 0 60, Off 1 60] ~=? eventosPorNotas funcionEventos 0,
   [On 0 60,On 1 64,Off 2 60,Off 2 64] ~=? eventosPorNotas funcionEventos 2,
   [On 0 60,On 1 64,Off 2 60,Off 2 64,On 3 67,Off 4 67] ~=? eventosPorNotas funcionEventos 3,
-  [On 0 60, Off 1 60] ~=? (\i -> notasQueSuenan i acorde) 1,
-  [On 0 60, On 3 64, On 6 67, Off 10 60, Off 10 64, Off 10 67] ~=? (\i -> notasQueSuenan i acorde) 10,
+  [On 0 60, Off 2 60] ~=? (eventosPorNotas (\i -> notasQueSuenan i acorde) 1),
+  [On 0 60, On 3 64, On 6 67, Off 10 60, Off 10 64, Off 10 67] ~=? (eventosPorNotas (\i -> notasQueSuenan i acorde) 10),
 --gui eventos
   2 ~=? 1+1,
   4 ~=? 2*2
