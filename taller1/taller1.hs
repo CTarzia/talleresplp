@@ -301,8 +301,8 @@ esParalelo _ = False
 testsEj1 = test [
   --superponer
   show (Paralelo [Nota 55 4, Secuencia (Silencio 1) (Nota 59 4)]) ~=? (show (superponer (Nota 55 4) 1 (Nota 59 4))),
-	show (Paralelo [Secuencia (Nota 60 9) (Silencio 1),Secuencia (Silencio 10) (Secuencia (Nota 61 9) (Silencio 1))]) ~=? (show (superponer (stac 60) 10 (stac 61))),
-
+  show (Paralelo [Secuencia (Nota 60 9) (Silencio 1),Secuencia (Silencio 10) (Secuencia (Nota 61 9) (Silencio 1))]) ~=? (show (superponer (stac 60) 10 (stac 61))),
+ 
  --canon
   show (Paralelo [Nota 60 4,Secuencia (Silencio 2) (Paralelo [Nota 60 4, Secuencia (Silencio 2) (Nota 60 4)])]) ~=? (show (canon 2 3 (Nota 60 4))),
   show (Paralelo [Paralelo [Nota 60 10,Secuencia (Silencio 3) (Nota 64 7),Secuencia (Silencio 6) (Nota 67 4)],Secuencia (Silencio 1) (Paralelo [Nota 60 10,Secuencia (Silencio 3) (Nota 64 7),Secuencia (Silencio 6) (Nota 67 4)])]) ~=? (show (canon 1 2 acorde)),
@@ -322,24 +322,24 @@ testsEj3 = test [
   show (Paralelo [Nota 0 0,Secuencia (Silencio 0) (Nota 0 0),Secuencia (Silencio 0) (Nota 0 0)]) ~=? show (transformarACero acorde)
   ]
 testsEj4 = test [
-	-- mapmelodia
-	show (Silencio 1) ~=? show (mapMelodia aumentarOctava (Silencio 1)),
-	show (Nota 68 1) ~=? show (mapMelodia aumentarOctava (Nota 60 1)),
-	show (Secuencia (Nota 68 1) (Nota 73 2)) ~=? show (mapMelodia aumentarOctava (Secuencia (Nota 60 1) (Nota 65 2))),
-	show (Paralelo [(Secuencia (Nota 68 1) (Nota 73 2)),Nota 70 3]) ~=? (show (mapMelodia aumentarOctava (Paralelo [(Secuencia (Nota 60 1) (Nota 65 2)), (Nota 62 3)]))),
+  -- mapmelodia
+  show (Silencio 1) ~=? show (mapMelodia aumentarOctava (Silencio 1)),
+  show (Nota 68 1) ~=? show (mapMelodia aumentarOctava (Nota 60 1)),
+  show (Secuencia (Nota 68 1) (Nota 73 2)) ~=? show (mapMelodia aumentarOctava (Secuencia (Nota 60 1) (Nota 65 2))),
+  show (Paralelo [(Secuencia (Nota 68 1) (Nota 73 2)),Nota 70 3]) ~=? (show (mapMelodia aumentarOctava (Paralelo [(Secuencia (Nota 60 1) (Nota 65 2)), (Nota 62 3)]))),
 
-	-- transportar
-	show (Silencio 1) ~=? show (transportar 8 (Silencio 1)),
-	show (mapMelodia aumentarOctava (Nota 60 1)) ~=? show (transportar 8 (Nota 60 1)),
-	show (mapMelodia aumentarOctava (Secuencia (Nota 60 1) (Nota 65 2))) ~=? show (transportar 8 (Secuencia (Nota 60 1) (Nota 65 2))),
-	(show (mapMelodia aumentarOctava (Paralelo [(Secuencia (Nota 60 1) (Nota 65 2)), (Nota 62 3)]))) ~=? (show (transportar 8 (Paralelo [(Secuencia (Nota 60 1) (Nota 65 2)), (Nota 62 3)]))),
+  -- transportar
+  show (Silencio 1) ~=? show (transportar 8 (Silencio 1)),
+  show (mapMelodia aumentarOctava (Nota 60 1)) ~=? show (transportar 8 (Nota 60 1)),
+  show (mapMelodia aumentarOctava (Secuencia (Nota 60 1) (Nota 65 2))) ~=? show (transportar 8 (Secuencia (Nota 60 1) (Nota 65 2))),
+  (show (mapMelodia aumentarOctava (Paralelo [(Secuencia (Nota 60 1) (Nota 65 2)), (Nota 62 3)]))) ~=? (show (transportar 8 (Paralelo [(Secuencia (Nota 60 1) (Nota 65 2)), (Nota 62 3)]))),
 
-	-- duracionTotal
+  -- duracionTotal
 
-	1 ~=? duracionTotal (Silencio 1),
-	2 ~=? duracionTotal (Nota 60 2),
-	3 ~=? duracionTotal (Secuencia (Nota 60 1) (Nota 65 2)),
-	3 ~=? duracionTotal (Paralelo [(Secuencia (Nota 60 1) (Nota 65 2)), (Nota 62 3)]),
+  1 ~=? duracionTotal (Silencio 1),
+  2 ~=? duracionTotal (Nota 60 2),
+  3 ~=? duracionTotal (Secuencia (Nota 60 1) (Nota 65 2)),
+  3 ~=? duracionTotal (Paralelo [(Secuencia (Nota 60 1) (Nota 65 2)), (Nota 62 3)]),
 
   --cambiarVelocidad
   show (Paralelo [Nota 60 20,Secuencia (Silencio 6) (Nota 64 14),Secuencia (Silencio 12) (Nota 67 8)]) ~=? show (cambiarVelocidad 2 acorde),
@@ -381,11 +381,11 @@ testsEj6 = test [
   [On 0 60, Off 2 60] ~=? (eventosPorNotas (\i -> notasQueSuenan i acorde) 1),
   [On 0 60, On 3 64, On 6 67, Off 10 60, Off 10 64, Off 10 67] ~=? (eventosPorNotas (\i -> notasQueSuenan i acorde) 10),
 --eventos
-	[] ~=? (eventos (Silencio 1) 2),
+  [] ~=? (eventos (Silencio 1) 2),
   [On 0 60,On 3 64,On 6 67,Off 7 60,Off 7 64,Off 7 67] ~=? (eventos acorde 6),
-	[On 0 60,On 3 64,On 6 67,Off 10 60,Off 10 64,Off 10 67] ~=? (eventos acorde 11),
+  [On 0 60,On 3 64,On 6 67,Off 10 60,Off 10 64,Off 10 67] ~=? (eventos acorde 11),
   [On 0 60,Off 3 60,On 3 62,Off 4 62,On 4 64,Off 6 64] ~=? (eventos doremi 5),
-	[On 0 60,Off 3 60,On 3 62,Off 4 62,On 4 64,Off 7 64,On 7 60,Off 8 60,On 8 64,Off 10 64,On 10 60,Off 12 60,On 12 64,Off 16 64] ~=? (eventos doremi 16)
+  [On 0 60,Off 3 60,On 3 62,Off 4 62,On 4 64,Off 7 64,On 7 60,Off 8 60,On 8 64,Off 10 64,On 10 60,Off 12 60,On 12 64,Off 16 64] ~=? (eventos doremi 16)
   ]
 
 
