@@ -83,7 +83,7 @@ sinRepetidos :: (Eq a) => [a] -> [a]
 sinRepetidos = foldr (\x rec -> if (elem x rec) then rec else (x:rec) ) []
 
 notasQueSuenan :: Instante->Melodia->[Tono]
-notasQueSuenan i m = sinRepetidos (notasQueSuenanConRepes i m) -- No me sale con . (puntito)
+notasQueSuenan i m = sinRepetidos (notasQueSuenanConRepes i m)
 
 -- En instantes menores que 0 no suena ninguna nota. Se puede usar recursión explícita. Resaltar las partes del código que hacen que no se ajuste al esquema fold.
 notasQueSuenanConRepes :: Instante->Melodia->[Tono]
