@@ -83,12 +83,13 @@ infer' (AppExp u v)           n = case infer' u n of
                                                                     (
                                                                       joinC [subst <.> c1', subst <.> c2'],
                                                                       subst <.> AppExp e1' e2',
-                                                                      TVar n2'
+                                                                      subst <.> (TVar n2')
                                                                     )
                                                             )
                                             UError u1 u2 -> uError u1 u2
                                         res2@(Error _) -> res2  
                                     res1@(Error _) -> res1
+
 infer' (LamExp x _ e)         n = case infer' e n of
                                     OK (n', (c', e', t')) ->
                                       OK ((if (variableIsInGamma c') then n' else n'+1),
@@ -104,17 +105,87 @@ infer' (LamExp x _ e)         n = case infer' e n of
 
 -- OPCIONALES
 
-infer' (PredExp e)            n = undefined
-infer' (IsZeroExp e)          n = undefined
-infer' TrueExp                n = undefined
-infer' FalseExp               n = undefined
-infer' (IfExp u v w)          n = undefined
+infer' (PredExp e)            n = case infer' e n of
+                                    OK (n', (c', e', t')) ->
+                                      case mgu [(t', TNat)] of
+                                        UOK subst -> OK (n',
+                                                            (
+                                                            subst <.> c',
+                                                            subst <.> PredExp e',
+                                                            TNat
+                                                            )
+                                                        )
+                                        UError u1 u2 -> uError u1 u2
+                                    res@(Error _) -> res
+
+infer' (IsZeroExp e)          n = case infer' e n of
+                                    OK (n', (c', e', t')) ->
+                                      case mgu [(t', TNat)] of
+                                        UOK subst -> OK (n',
+                                                            (
+                                                            subst <.> c',
+                                                            subst <.> IsZeroExp e',
+                                                            TBool
+                                                            )
+                                                        )
+                                        UError u1 u2 -> uError u1 u2
+                                    res@(Error _) -> res
+
+infer' TrueExp                n = OK (n , (emptyContext, TrueExp, TBool))
+infer' FalseExp               n = OK (n , (emptyContext, FalseExp, TBool))
+infer' (IfExp u v w)          n = case infer' u n of
+                                    OK (n1', (c1', e1', t1')) ->
+                                      case infer' v n of
+                                        OK (n2', (c2', e2', t2')) ->
+                                          case infer' w n of
+                                            OK (n3', (c3', e3', t3')) ->
+                                              case mgu ([(t2', t3'), (t1', TBool)] ++ (checkThreeContexts c1' c2' c3')) of
+                                                UOK subst -> OK (n3', 
+                                                                  (
+                                                                    joinC [subst <.> c1', subst <.> c2', subst <.> c3'],
+                                                                    subst <.> IfExp e1' e2' e3',
+                                                                    t2'
+                                                                  )
+                                                                )
+                                                UError u1 u2 -> uError u1 u2
+                                            res3@(Error _) -> res3
+                                        res2@(Error _) -> res2
+                                    res1@(Error _) -> res1
 
 -- EXTENSIÓN
 
-infer' (EmptyListExp _)       n = undefined
-infer' (ConsExp u v)          n = undefined
-infer' (ZipWithExp u v x y w) n = undefined
+infer' (EmptyListExp _)       n = OK (n+1 , (emptyContext, EmptyListExp (TVar n), TList (TVar n)))
+infer' (ConsExp u v)          n = case infer' u n of
+                                    OK (n1', (c1', e1', t1')) ->
+                                      case infer' v n1' of 
+                                        OK (n2', (c2', e2', t2')) ->
+                                          case mgu ((t2', TList t1') : (checkContexts c1' c2')) of
+                                            UOK subst -> OK (n2', (
+                                                                    joinC [subst <.> c1', subst <.> c2'],
+                                                                    subst <.> ConsExp e1' e2',
+                                                                    subst <.> (TList t1')
+                                                                  )
+                                                            )
+                                            UError u1 u2 -> uError u1 u2
+                                        res2@(Error _) -> res2  
+                                    res1@(Error _) -> res1
+infer' (ZipWithExp u v x y w) n = case infer' u n of
+                                    OK (n1', (c1', e1', t1')) ->
+                                      case infer' v n1' of 
+                                        OK (n2', (c2', e2', t2')) ->
+                                          case infer' w n of
+                                            OK (n3', (c3', e3', t3')) ->
+                                              case mgu (checkThreeContexts c1' c2' c3') of
+                                                UOK subst -> OK (n3', (
+                                                                        joinC [subst <.> c1', subst <.> c2', subst <.> c3'],
+                                                                        subst <.> ZipWithExp e1' e2' x y e3',
+                                                                        subst <.> TList t3'
+                                                                      )
+                                                                )
+                                                UError u1 u2 -> uError u1 u2
+                                            res3@(Error _) -> res3
+                                        res2@(Error _) -> res2  
+                                    res1@(Error _) -> res1
 
 --------------------------------
 -- YAPA: Error de unificacion --
@@ -125,3 +196,6 @@ uError t1 t2 = Error $ "Cannot unify " ++ show t1 ++ " and " ++ show t2
 checkContexts :: Context -> Context -> [UnifGoal]
 checkContexts c1 c2 = map (\s -> (evalC c1 s, evalC c2 s)) intersection
                      where intersection = intersect (domainC c1) (domainC c2)
+
+checkThreeContexts :: Context -> Context -> Context -> [UnifGoal]
+checkThreeContexts c1 c2 c3 = checkContexts c1 c2 ++ checkContexts c2 c3 ++ checkContexts c1 c3

@@ -31,9 +31,9 @@ tests :: IO Counts
 tests = do runTestTT allTests
 
 allTests = test [
-  "ejercicio1" ~: testEj1
-  -- "ejercicio2" ~: testEj2,
-  -- "ejercicio3" ~: testEj3
+  "ejercicio1" ~: testEj1,
+  "ejercicio2" ~: testEj2,
+  "ejercicio3" ~: testEj3
   ]
 
 testEj1 = concat [testZeroExp, testVarExp, testAppExp, testLamExp]
