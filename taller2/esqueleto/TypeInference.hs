@@ -92,15 +92,14 @@ infer' (AppExp u v)           n = case infer' u n of
 
 infer' (LamExp x _ e)         n = case infer' e n of
                                     OK (n', (c', e', t')) ->
-                                      OK ((if (variableIsInGamma c') then n' else n'+1),
+                                      OK ((if (variableIsInGamma c' x) then n' else n'+1),
                                             (
                                               removeC c' x,
-                                              LamExp x (if (variableIsInGamma c') then evalC c' x else TVar n') e',
-                                              TFun (if (variableIsInGamma c') then evalC c' x else TVar n') t'
+                                              LamExp x (if (variableIsInGamma c' x) then evalC c' x else TVar n') e',
+                                              TFun (if (variableIsInGamma c' x) then evalC c' x else TVar n') t'
                                             )
                                           )
                                     res@(Error _) -> res
-                                  where variableIsInGamma c = elem x (domainC c)
 
 
 -- OPCIONALES
@@ -173,7 +172,7 @@ infer' (ZipWithExp u v x y w) n = case infer' u n of
                                     OK (n1', (c1', e1', t1')) ->
                                       case infer' v n1' of 
                                         OK (n2', (c2', e2', t2')) ->
-                                          case infer' w n of
+                                          case infer' w n2' of
                                             OK (n3', (c3', e3', t3')) ->
                                               case mgu (checkThreeContexts c1' c2' c3') of
                                                 UOK subst -> OK (n3', (
@@ -186,7 +185,16 @@ infer' (ZipWithExp u v x y w) n = case infer' u n of
                                             res3@(Error _) -> res3
                                         res2@(Error _) -> res2  
                                     res1@(Error _) -> res1
+                                where deleteVariablesFromContext c = removeC (removeC c x) y
+                                      calculateActualVariableNumber n c =  n - (if (variableIsInGamma c x) then 1 else 0) - (if (variableIsInGamma c y) then 1 else 0)
+                                      addToContext c t1 t2 = joinC [c,(extendC (extendC emptyContext y (listType t2)) x (listType t1))]
+                                      listType (TList t) = t
 
+variableIsInGamma :: Context -> Symbol -> Bool
+variableIsInGamma c x = elem x (domainC c)
+
+listType :: Type -> Type
+listType (TList t) = t
 --------------------------------
 -- YAPA: Error de unificacion --
 --------------------------------

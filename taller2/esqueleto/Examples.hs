@@ -40,6 +40,7 @@ expr 34 = "[]"
 expr 35 = "0 :: succ(0) :: []"
 expr 36 = "zip [] and [] with x,y ~> f x y"
 expr 37 = "zip 0 :: [] and succ(0) :: [] with x,y ~> succ(f x y)"
+expr 38 = "zip [] and [] with x,y ~> 0"
 expr n = error $ "La expresion " ++ show n ++ " no esta definida"
 
 sol :: Int -> String
@@ -81,4 +82,5 @@ sol 34 = "{} >> []{t0} : [t0]"
 sol 35 = "{} >> 0 :: (succ(0) :: []{Nat}) : [Nat]"
 sol 36 = "{f:t0 -> t1 -> t2} >>\nzip []{t0} and []{t1} with x,y ~> f x y\n: [t2]"
 sol 37 = "{f:Nat -> Nat -> Nat} >>\nzip (0 :: []{Nat}) and (succ(0) :: []{Nat}) with x,y ~> succ(f x y)\n: [Nat]"
+sol 38 = "{} >> zip []{t0} and []{t1} with x,y ~> 0 : [Nat]"
 sol n = error $ "La solucion " ++ show n ++ " no esta definida"

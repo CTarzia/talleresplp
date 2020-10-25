@@ -56,4 +56,4 @@ testIfExp = testExp [30..33]
 -- tests ejercicio 3
 testEmptyListExp = testExp [34]
 testConsExp = testExp [35]
-testZipWithExp = testExp [36,37]
+testZipWithExp = testExp [36,37,38]
