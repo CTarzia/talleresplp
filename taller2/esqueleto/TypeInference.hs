@@ -95,12 +95,11 @@ infer' (LamExp x _ e)         n = case infer' e n of
                                       OK ((if (variableIsInGamma c' x) then n' else n'+1),
                                             (
                                               removeC c' x,
-                                              LamExp x (if (variableIsInGamma c' x) then evalC c' x else TVar n') e',
-                                              TFun (if (variableIsInGamma c' x) then evalC c' x else TVar n') t'
+                                              LamExp x (evalOrNew c' x n') e',
+                                              TFun (evalOrNew c' x n') t'
                                             )
                                           )
                                     res@(Error _) -> res
-
 
 -- OPCIONALES
 
@@ -174,9 +173,9 @@ infer' (ZipWithExp u v x y w) n = case infer' u n of
                                         OK (n2', (c2', e2', t2')) ->
                                           case infer' w n2' of
                                             OK (n3', (c3', e3', t3')) ->
-                                              case mgu (checkThreeContexts c1' c2' c3') of
+                                              case mgu ((t1', TList (evalOrNew c3' x n3')) : (t2', TList (evalOrNew c3' y (if variableIsInGamma c3' x then n3' else n3'+1))) : checkThreeContexts c1' c2' (removeXAndY c3')) of
                                                 UOK subst -> OK (n3', (
-                                                                        joinC [subst <.> c1', subst <.> c2', subst <.> c3'],
+                                                                        joinC [subst <.> c1', subst <.> c2', subst <.> (removeXAndY c3')],
                                                                         subst <.> ZipWithExp e1' e2' x y e3',
                                                                         subst <.> TList t3'
                                                                       )
@@ -185,13 +184,13 @@ infer' (ZipWithExp u v x y w) n = case infer' u n of
                                             res3@(Error _) -> res3
                                         res2@(Error _) -> res2  
                                     res1@(Error _) -> res1
-                                where deleteVariablesFromContext c = removeC (removeC c x) y
-                                      calculateActualVariableNumber n c =  n - (if (variableIsInGamma c x) then 1 else 0) - (if (variableIsInGamma c y) then 1 else 0)
-                                      addToContext c t1 t2 = joinC [c,(extendC (extendC emptyContext y (listType t2)) x (listType t1))]
-                                      listType (TList t) = t
+                                where removeXAndY c = removeC (removeC c x) y
+
+evalOrNew :: Context -> Symbol -> Int -> Type
+evalOrNew c s n = (if (variableIsInGamma c s) then evalC c s else TVar n)
 
 variableIsInGamma :: Context -> Symbol -> Bool
-variableIsInGamma c x = elem x (domainC c)
+variableIsInGamma c s = elem s (domainC c)
 
 listType :: Type -> Type
 listType (TList t) = t
