@@ -61,9 +61,8 @@ transportar :: Integer -> Melodia -> Melodia
 transportar n = mapMelodia (+n)
 
 duracionTotal :: Melodia->Duracion
-duracionTotal = foldMelodia id cN (+) cP
-               where cN = (\t d -> d) -- ???
-                     cP = (\l -> if (l == []) then 0 else maximum l)
+duracionTotal = foldMelodia id (flip const) (+) cP
+               where cP = (\l -> if (l == []) then 0 else maximum l)
 
 
 cambiarVelocidad :: Float->Melodia->Melodia--Sugerencia: usar round y fromIntegral
@@ -76,7 +75,6 @@ invertir :: Melodia -> Melodia
 invertir = foldMelodia Silencio Nota (flip Secuencia) Paralelo
 
 -- Ejercicio 5
--- ¿qué esquema de recursión serviría para esta función? ????
 notasQueSuenan :: Instante->Melodia->[Tono]
 notasQueSuenan i _ | (i < 0) = []
 notasQueSuenan _ (Silencio _) = []
@@ -92,6 +90,8 @@ si las notas deberian ser agregadas o no a la respuesta.-}
 {- Tampoco se puede definir con foldMelodia si invertimos los parametros porque seguimos teniendo el problema de no 
 saber el contexto de la melodia, y por lo tanto no podemos determinar en que instante de la melodia completa esta el 
 elemento de la melodia que estamos evaluando. -}
+
+{- El esquema de recursion que serviria para esta funcion seria recr -}
 
 -- Ejercicio 6
 
