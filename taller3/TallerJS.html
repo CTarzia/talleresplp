@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!--
+<html style="background-position: bottom right;background-repeat: no-repeat;background-image: url('https://vignette.wikia.nocookie.net/frozen/images/4/4a/Elsa.png/revision/latest/top-crop/width/360/height/450?cb=20170824042305&path-prefix=es');">
+-->
+<html>
+  <head>
+    <title>Taller de JavaScript</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="taller.js"></script>
+    <script type="text/javascript">
+    function fail(i, m) {
+      resultado.innerHTML += " - Falló el test " + i;
+      if (m) {
+        resultado.innerHTML += ": " + m;
+      }
+      resultado.innerHTML += "<br/><br/>"
+    }
+    function si_o_no(bool) {
+      return (bool ? " " : " <b>NO</b> ")
+    }
+    function nombre(objeto) {
+      if (objeto) return objeto.nombre;
+      return "Ninguno";
+    }
+    function calcularResultado() {
+      let res = "";
+      res += "<b>Ejercicio 1</b>\n" + crearTest(1, testEjercicio1)();
+      res += "\n";
+      res += "<b>Ejercicio 2</b>\n" + crearTest(2, testEjercicio2)();
+      res += "\n";
+      res += "<b>Ejercicio 3</b>\n" + crearTest(3, testEjercicio3)();
+      res += "\n";
+      res += "<b>Ejercicio 4</b>\n" + crearTest(4, testEjercicio4)();
+      res += "\n";
+      res += "<b>Ejercicio 5</b>\n" + crearTest(5, testEjercicio5)();
+      res += "\n";
+      res += "<b>Ejercicio 6</b>\n" + crearTest(6, testEjercicio6)();
+      res += "\n";
+      res += "<b>Ejercicio 7</b>\n" + crearTest(7, testEjercicio7)();
+      return res;
+    }
+    </script>
+  </head>
+<body>
+  <h1>Taller de Javascript</h1>
+  <div>
+    <h2>Instrucciones</h2>
+    <p>Editen el archivo taller.js y luego recarguen esta p&aacute;gina para ver el resultado de la ejecuci&oacute;n.</p>
+    <p>Probablemente necesiten recargar con <b>Ctrl+F5</b> para limpiar la cach&eacute;.
+  </div>
+  <div id="errores" hidden>
+    <div><h2>Errores</h2></div>
+    <div id="resultado" style="border-style: groove;"></div>
+  </div>
+  <div><h2>Salida</h2></div>
+  <div id="salida" style="border-style: groove;"></div>
+</body>
+<script type="text/javascript">
+  let salida = document.getElementById("salida");
+  let resultado = document.getElementById("resultado");
+  salida.innerHTML = calcularResultado().replace(/\n/g,"<br/>");
+  if (resultado.innerHTML) {
+    document.getElementById("errores").hidden = false;
+  }
+</script>
+</html>
