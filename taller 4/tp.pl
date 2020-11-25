@@ -134,12 +134,15 @@ cantidadDeEjercito([(U,C)|L], N) :- cantidadDeEjercito(L,N1), N is N1+C.
 
 % Ej 6 : instancia un pueblo para derrotar a un ejército enemigo
 % puebloPara ( +En , ?A , -Ed , -Ej )
-puebloPara(En, A, Eds, Ej) :- var(A), puebloOptimoPara(En, LowA, Eds, Ej), desde(LowA,A).
-puebloPara(En, A, Eds, Ej) :- nonvar(A), puebloOptimoPara(En, LowA, Eds, Ej), A >= LowA.
+puebloPara(En, A, Eds, Ej) :- cantidadDeEjercito(En,EnC), between(1,EnC,EjC), ganaA(Ej,En,EjC), edificiosNecesarios(Ej, Eds), costo(Ej,CosEj), costo(Eds,CosEds), Af is rdiv(CosEj + CosEds,50), A is ceiling(Af).
 
 % Ej 7 : pueblo óptimo (en cantidad de aldenos necesarios)
 % puebloOptimoPara( +En , ?A , -Ed , -Ej )
-puebloOptimoPara(En, LowA, Eds, Ej) :- cantidadDeEjercito(En,EnC), between(1,EnC,EjC), ganaA(Ej,En,EjC), edificiosNecesarios(Ej, Eds), costo(Ej,CosEj), costo(Eds,CosEds), Af is rdiv(CosEj + CosEds,50), LowA is ceiling(Af).
+puebloOptimoPara(En, A, Eds, Ej) :- puebloPara(En, A, Eds, Ej), not(hayMejorPueblo(En,A,Eds,Ej)).
+
+%hayMejorPueblo(+En, +A, +Eds, +Ej)
+hayMejorPueblo(En, A, Eds, Ej) :- puebloPara(En, A2, _, _), A2 < A. 
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TESTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
