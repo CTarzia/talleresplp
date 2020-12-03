@@ -91,8 +91,7 @@ si las notas deberian ser agregadas o no a la respuesta.-}
 saber el contexto de la melodia, y por lo tanto no podemos determinar en que instante de la melodia completa esta el 
 elemento de la melodia que estamos evaluando. -}
 
-{- El esquema de recursion que serviria para esta funcion seria de recursion primitiva ya que necesitariamos para secuencia
-......... ????-}
+{- El esquema de recursion que serviria para esta funcion seria recr -}
 
 -- Ejercicio 6
 
